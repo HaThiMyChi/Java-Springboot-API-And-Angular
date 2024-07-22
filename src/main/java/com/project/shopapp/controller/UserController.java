@@ -11,7 +11,7 @@ import com.project.shopapp.dtos.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("${api.prefix}/users")
 
 public class UserController {
     @PostMapping("/register")
