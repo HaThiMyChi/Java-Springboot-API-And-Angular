@@ -1,6 +1,9 @@
 package com.project.shopapp.controller;
 
+import com.project.shopapp.services.IUserService;
+import com.project.shopapp.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,9 +14,11 @@ import com.project.shopapp.dtos.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("${api.prefix}/users")
 
 public class UserController {
+    private final IUserService userService;
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO,
                                         BindingResult result) {
@@ -28,6 +33,7 @@ public class UserController {
             if(!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 return ResponseEntity.badRequest().body("Password does not match!");
             }
+            userService.createUser(userDTO);
             return ResponseEntity.ok("Register successfully!");
         } catch(Exception e) {
             // Hai cai nay giong nhau
@@ -42,7 +48,9 @@ public class UserController {
     ) {
         // Kiem tra thong tin dang nhap va sinh token
         // Tra ve token trong response
-        return ResponseEntity.ok("Some token");
+        String token = userService.login(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+//        return ResponseEntity.ok("Some token");
+        return ResponseEntity.ok(token);
     }
 
 }
