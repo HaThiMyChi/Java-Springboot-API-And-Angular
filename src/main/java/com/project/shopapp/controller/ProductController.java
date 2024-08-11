@@ -1,21 +1,22 @@
 package com.project.shopapp.controller;
 
 import com.project.shopapp.dtos.ProductDTO;
+import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.models.Product;
+import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.services.IProductService;
 import jakarta.validation.Valid;
-import org.apache.catalina.util.StringUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.naming.Binding;
-import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,7 +28,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${api.prefix}/products")
 
+@Service
+@RequiredArgsConstructor
 public class ProductController {
+    private final IProductService productService;
+
     @PostMapping(value = "",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     // POST http://localhost:9005/v1/api/products
@@ -44,6 +49,8 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
+
+            Product newProduct = productService.createProduct(productDTO);
 
 //            MultipartFile file = productDTO.getFile(); // get 1 file image
 
@@ -70,6 +77,9 @@ public class ProductController {
                     // Lưu file và cập nhật thumbnail trong DTO
                     String filename = storeFile(file); // Thay thế hàm này với code cua bạn đẻ lưu file
                     // Lưu vào đối tượng product trong DB => sẽ làm sau
+                    ProductImage productImage = productService.createProductImage(newProduct.getId(), ProductImageDTO.builder()
+                            .imageUrl(filename)
+                            .build());
                     // Luu vao bang product_images trong DB
                 }
             }

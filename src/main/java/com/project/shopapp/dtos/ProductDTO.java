@@ -33,7 +33,7 @@ public class ProductDTO {
     @JsonProperty("category_id")
 //    boi vi ben database no ten category_id, ma ben java thi ko cho tao bien co dau _ (neu ten field khong giong
 //        voi field o database thi khai bao JsonProperty, con neu giong thi khoi can
-    private String categoryID;
+    private Long categoryId;
 
     private List<MultipartFile> files;
 }
